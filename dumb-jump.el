@@ -1611,7 +1611,20 @@ If nil add also the language type of current src block"
                    "test ::proc() {"
                    "test:: proc(a: i32) -> i32 {"
                    "test::proc{}"
-                   "test: :proc \"contextless\" {}")))
+                   "test: :proc \"contextless\" {}"))
+
+    ;; CMake
+    (:type "function" :supports ("rg") :language "cmake"
+           :regex "\\b(?i:function|macro)\\s*\\(\\s*JJJ\\b"
+           :tests ("function(test arg1 arg2)"
+                   "function ( test )"
+                   "FUNCTION(test foo bar)"
+                   "macro(test arg1 arg2)"
+                   "MACRO (test)")
+           :not ("function(testnot)"
+                 "macro(testnot)"
+                 "endfunction(test)"
+                 "endmacro(test)")))
 
 
   "List of regex patttern templates organized by language and type to use for generating the grep command."
@@ -1631,6 +1644,7 @@ If nil add also the language type of current src block"
 (defcustom dumb-jump-language-file-exts
   '((:language "elisp" :ext "el" :agtype "elisp" :rgtype "elisp")
     (:language "elisp" :ext "el.gz" :agtype "elisp" :rgtype "elisp")
+    (:language "cmake" :ext "cmake" :rgtype "cmake")
     (:language "commonlisp" :ext "lisp" :agtype "lisp" :rgtype "lisp")
     (:language "commonlisp" :ext "lsp" :agtype "lisp" :rgtype "lisp")
     (:language "c++" :ext "c" :agtype "cc" :rgtype "c")
@@ -1789,6 +1803,7 @@ If nil add also the language type of current src block"
     (:language "javascript" :type "variable" :right "^)" :left "($")
     (:language "javascript" :type "variable" :right "^\\." :left nil)
     (:language "javascript" :type "variable" :right "^;" :left nil)
+    (:language "cmake" :type "function" :right "^(" :left nil)
     (:language "typescript" :type "function" :right "^(" :left nil)
     (:language "perl" :type "function" :right "^(" :left nil)
     (:language "tcl" :type "function" :left "\\[$" :right nil)
@@ -2194,7 +2209,7 @@ associated language or org when outside a src block."
 return a new proplist. The new proplis is PROPLIS
 where a NEWLANG plist(s) is (are) added to PROPLIST.
 The plist(s) value of NEWLANG is (are) copied from
-those of LANG and LANG is replaced by NEWLANG." 
+those of LANG and LANG is replaced by NEWLANG."
   (unless (--filter (string= newlang (plist-get it :language))
                    proplist)
       (--splice
@@ -2204,7 +2219,7 @@ those of LANG and LANG is replaced by NEWLANG."
 
 (defun dumb-jump-make-composite-language (mode lang extension agtype rgtype)
   "Concat one MODE  (usually the string org) with a LANG  (c or python or etc)
-to make a composite language of the form cPLUSorg or pythonPLUSorg or etc. 
+to make a composite language of the form cPLUSorg or pythonPLUSorg or etc.
 Modify `dumb-jump-find-rules' and `dumb-jump-language-file-exts' accordingly
 (using EXTENSION AGTYPE RGTYPE)"
   (let* ((complang (concat lang "PLUS" mode))
@@ -2478,6 +2493,7 @@ current file."
 (defcustom dumb-jump-language-comments
   '((:comment "//" :language "c++")
     (:comment ";" :language "elisp")
+    (:comment "#" :language "cmake")
     (:comment ";" :language "commonlisp")
     (:comment "//" :language "javascript")
     (:comment "//" :language "typescript")
