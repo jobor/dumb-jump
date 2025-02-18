@@ -1528,7 +1528,20 @@ or most optimal searcher."
     (:type "type" :supports ("ag" "grep" "rg" "git-grep") :language "apex"
            :regex "(class|interface)\\s*JJJ\\b"
            :tests ("class test:" "public class test implements Something")
-           :not ("class testnot:" "public class testnot implements Something")))
+           :not ("class testnot:" "public class testnot implements Something"))
+
+    ;; CMake
+    (:type "function" :supports ("rg") :language "cmake"
+           :regex "\\b(?i:function|macro)\\s*\\(\\s*JJJ\\b"
+           :tests ("function(test arg1 arg2)"
+                   "function ( test )"
+                   "FUNCTION(test foo bar)"
+                   "macro(test arg1 arg2)"
+                   "MACRO (test)")
+           :not ("function(testnot)"
+                 "macro(testnot)"
+                 "endfunction(test)"
+                 "endmacro(test)")))
 
 
   "List of regex patttern templates organized by language and type to use for generating the grep command."
@@ -1548,6 +1561,7 @@ or most optimal searcher."
 (defcustom dumb-jump-language-file-exts
   '((:language "elisp" :ext "el" :agtype "elisp" :rgtype "elisp")
     (:language "elisp" :ext "el.gz" :agtype "elisp" :rgtype "elisp")
+    (:language "cmake" :ext "cmake" :rgtype "cmake")
     (:language "commonlisp" :ext "lisp" :agtype "lisp" :rgtype "lisp")
     (:language "commonlisp" :ext "lsp" :agtype "lisp" :rgtype "lisp")
     (:language "c++" :ext "c" :agtype "cc" :rgtype "c")
@@ -1704,6 +1718,7 @@ or most optimal searcher."
     (:language "javascript" :type "variable" :right "^)" :left "($")
     (:language "javascript" :type "variable" :right "^\\." :left nil)
     (:language "javascript" :type "variable" :right "^;" :left nil)
+    (:language "cmake" :type "function" :right "^(" :left nil)
     (:language "typescript" :type "function" :right "^(" :left nil)
     (:language "perl" :type "function" :right "^(" :left nil)
     (:language "tcl" :type "function" :left "\\[$" :right nil)
@@ -2323,6 +2338,7 @@ current file."
 (defcustom dumb-jump-language-comments
   '((:comment "//" :language "c++")
     (:comment ";" :language "elisp")
+    (:comment "#" :language "cmake")
     (:comment ";" :language "commonlisp")
     (:comment "//" :language "javascript")
     (:comment "//" :language "typescript")
