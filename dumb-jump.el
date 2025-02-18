@@ -2239,7 +2239,7 @@ Modify `dumb-jump-find-rules' and `dumb-jump-language-file-exts' accordingly
 
 (defun dumb-jump-get-mode-base-name ()
   "Get the base name of the mode."
-  (s-replace "-mode" "" (symbol-name major-mode)))
+  (s-chop-suffixes '("-ts-mode" "-mode") (symbol-name major-mode)))
 
 (defun dumb-jump-get-language-from-mode ()
   "Extract the language from the 'major-mode' name.  Currently just everything before '-mode'."
